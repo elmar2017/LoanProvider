@@ -1,0 +1,210 @@
+﻿@model Loan
+@{
+    ViewData["Title"] = "GetLoanDetails";
+}
+
+<h1>GetLoanDetails</h1>
+
+<form style="margin-top:50px;" action="/Home/CreateNewLoan" method="post">
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6"><label>Client</label></div>
+                    <div class="col-sm-6">
+
+                        <select name="ClientId" class="form-control" id="ClientId">
+                            <option value="" selected></option>
+                            @foreach (Client client in ViewBag.Clients)
+                            {
+
+                                if (client.ClientUniqueId == Model.ClientUniqueId)
+                                {
+                                    <option value="@client.ClientUniqueId" selected>@client.Name @client.Surname</option>
+                                }
+                                else
+                                {
+                                    <option value="@client.ClientUniqueId">@client.Name @client.Surname</option>
+                                }
+                            }
+                        </select>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6"><label>Telephone number</label></div>
+                    <div class="col-sm-6"><input type="text" name="TelephoneNumber" value="@Model.ClientUnique.TelephoneNr" class="form-control"></div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
+                <div class="row">
+                    <div class="col-sm-6"><label>Loan amount</label></div>
+                    <div class="col-sm-6"><input type="text" id="LoanAmount" name="LoanAmount" value="@Model.Amount" class="form-control"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6"><label>Loan period</label></div>
+                    <div class="col-sm-6">
+
+                        <select name="LoanPeriod" class="form-control" id="LoanPeriod">
+
+                            @for (int i = 3; i < 24; i++)
+                            {
+                                if (i == Model.LoanPeriod)
+                                {
+                                    <option value="@i" selected>@i month</option>
+                                }
+                                else
+                                {
+                                    <option value="@i">@i month</option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6"><label>Monthly interest rate</label></div>
+                    <div class="col-sm-6"><input type="text" id="InterestRate" name="InterestRate" value="@Model.InterestRate" class="form-control"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6"><label>Payout date</label></div>
+                    <div class="col-sm-6"><input type="text" id="PayoutDate" name="PayoutDate" value="@Model.PayoutDate.ToString("dd/MM/yyyy")" class="form-control"></div>
+                </div>
+            </div>
+
+            <button style="float:right" type="button" id="calculateInvoice">Calculate invoices</button>
+
+
+            <div id="invoicesDiv">
+
+                @if (Model.Invoices.Count > 0)
+                {
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Invoice NO</th>
+                                <th>Due date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @for (int i = 0; i < Model.Invoices.Count; i++)
+                            {
+                                Invoices invoice = Model.Invoices.ElementAt(i);
+
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@invoice.InvoiceNr</td>
+                                    <td>@invoice.DueDate</td>
+                                    <td>@invoice.Amount</td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+
+
+
+                    <div class="row>">
+                        <div class="col-sm-6"><label>Total interest</label></div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" value="75" />
+                        </div>
+                    </div>
+
+
+
+                }
+
+            </div>
+
+            <br />
+            <br />
+            <br />
+            <br />
+            <button class="btn btn-success" style="float:right;" type="submit">Issue loan</button>
+            <a href="/Home/Index" class="btn btn-secondary" style="margin-left:15px; float:right;">Cancel</a>
+
+
+            <br />
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+
+
+
+
+
+</form>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+
+        $("#calculateInvoice").click(function () {
+
+            var InterestRate = $('#InterestRate').val();
+            var LoanAmount = $('#LoanAmount').val();
+            var LoanPeriod = $('#LoanPeriod').val();
+            var PayoutDate = $('#PayoutDate').val();
+
+            var invoiceData = {
+                "LoanId": "@Model.Id",
+                "InvoiceCount":"@Model.Invoices.Count()",
+                "InvoiceOrderNo": "1",
+                "MonthlyIntersetRate": InterestRate,
+                "LoanAmount": LoanAmount,
+                "LoanPeriod": LoanPeriod,
+                "PayoutDate": PayoutDate
+            };
+
+            $.ajax({
+                url: '/Home/CalculateInvoice',
+                type: 'POST',
+                data: JSON.stringify(invoiceData),
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+
+                    $("#invoicesDiv").empty().append(data);
+
+                },
+                error: function (data) {
+                    alert(data);
+                }
+            });
+
+
+
+
+
+
+
+
+        });
+    });
+</script>
+

@@ -1,0 +1,31 @@
+﻿@model List<Loan>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Client Id</th>
+            <th>Client</th>
+            <th>Loan amount</th>
+            <th>Payout date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Loan loan in Model)
+        {
+            <tr>
+                <td><a href="/Home/GetLoanDetails?loanId=@loan.Id">@loan.ClientUnique.ClientUniqueId</a></td>
+                <td>@loan.ClientUnique.Name @loan.ClientUnique.Surname </td>
+                <td>@loan.Amount</td>
+                <td>@loan.PayoutDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<a href="/Home/IssueNewLoan">New</a>
+<a href="/">Exit</a>

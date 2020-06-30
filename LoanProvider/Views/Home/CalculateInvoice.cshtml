@@ -1,0 +1,23 @@
+﻿@model LoanProvider.Models.ViewModels.InvoiceViewModel
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Invoice NO</th>
+            <th>Due date</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+            <td></td>
+            <td><input name="InvoiceNo" type="hidden" value="@Model.InvoiceNo" /> @Model.InvoiceNo</td>
+            <td><input name="InvoiceDueDate" type="hidden" value="@Model.DueDate" /> @Model.DueDate</td>
+            <td><input name="InvoiceAmount" type="hidden" value="@Model.Amount" /> @Model.Amount</td>
+        </tr>
+
+    </tbody>
+
+</table>`
